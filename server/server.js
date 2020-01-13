@@ -13,6 +13,11 @@ const port =  process.env.PORT || 3000
 app.use(bodyParser.json());
 
 
+app.post('/',  (req, res) => 
+{   
+  res.send('API FOR TODOS APP')
+    
+})
 app.post('/todos',  (req, res) => 
 {   
     console.log(req.body)
