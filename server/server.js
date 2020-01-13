@@ -27,6 +27,17 @@ app.post('/todos',  (req, res) =>
     )
 })
 
+app.get('/todos',  (req, res) => 
+{   
+   
+    Todo.find().then((Todo) => {
+        res.send({Todo})
+    }, (e) => {
+        res.send(e)
+    })
+    
+})
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
