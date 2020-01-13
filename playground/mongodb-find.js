@@ -9,7 +9,7 @@ const url = 'mongodb://localhost:27017';
 // Database Name
 const dbName = 'todoapp';
  
-// Use connect method to connect to the server
+// Use connect method to connect to the server  
 MongoClient.connect(url,  { useUnifiedTopology: true }, function(err, client) {
   assert.equal(null, err);
   console.log("Connected successfully to server");
@@ -28,11 +28,11 @@ MongoClient.connect(url,  { useUnifiedTopology: true }, function(err, client) {
   })
 
   db.collection('Todos').insertOne(
-    {text:'Leonardo louie', completed: false }, 
+    {text:'Go eat food', completed: true }, 
     
     (err, result)=>{
 
-    assert.equal(null, err);
+    assert.equal(null, err);  
     console.log(JSON.stringify(result.ops[0]._id.getTimestamp(), undefined, 2))
 
   })
