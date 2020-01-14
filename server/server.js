@@ -20,7 +20,7 @@ app.get('/',  (req, res) =>
 })
 app.post('/todos',  (req, res) => 
 {   
-    console.log(req.body)
+
     const todo = new Todo({
         text: req.body.text
     })
@@ -32,6 +32,8 @@ app.post('/todos',  (req, res) =>
     }
     )
 })
+
+
 
 app.get('/todos',  (req, res) => 
 {   
@@ -48,11 +50,31 @@ app.get('/todos',  (req, res) =>
 app.get('/todos/:id', (req, res) => {
 
     var { id} = req.params
+
     if(!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
     else { 
         Todo.findById(id).then((todos) => {
+            if(!todos)  return res.status(400).send()
+            res.send({todos})
+        }).catch((err) => {
+            return res.status(400).send();
+        })
+        
+    }
+
+})
+
+app.delete('/todos/:id', (req, res) => {
+
+    var { id} = req.params
+
+    if(!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+    else { 
+        Todo.findByIdAndRemove(id).then((todos) => {
             if(!todos)  return res.status(400).send()
             res.send({todos})
         }).catch((err) => {
