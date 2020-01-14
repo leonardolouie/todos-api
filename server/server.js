@@ -19,18 +19,21 @@ app.get('/',  (req, res) =>
   res.send('API FOR TODOS APP')
     
 })
+
 app.post('/todos',  (req, res) => 
 {   
+     
+    const body = _.pick(req.body, ['text'])
+    const todo = new Todo(body)
 
-    const todo = new Todo({
-        text: req.body.text
-    })
-
-    todo.save().then((doc) =>{
+    todo.save().then((doc) => {
         res.send(doc)
-    }, (err)=>{
+
+    }, (err)=> {
+
       res.send(err)
     }
+
     )
 })
 
@@ -113,6 +116,23 @@ app.patch('/todos/:id', (req, res ) => {
 
 
 });
+
+app.post('/user', (req, res) => {
+      
+    const body = _.pick(req.body, ['email', 'password'])
+    const user = new User(body)
+
+    
+
+    user.save().then(()=> {
+       return  user.generateAuthToken()
+    }).then((token) => {
+        res.header('x-auth', token).send(user)
+    }).catch((err) => { 
+        res.send(err)
+    })
+ 
+})
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
