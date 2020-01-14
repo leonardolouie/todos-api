@@ -42,11 +42,13 @@ app.post('/todos',  (req, res) =>
 
 
 
-app.get('/todos',  (req, res) => 
+app.get('/todos', authenticate,  (req, res) => 
 {   
-   
-    Todo.find().then((Todo) => {
-        res.send({Todo})
+
+    Todo.find({ _creator:req.user._id}).then((Todo) => {
+        res.send({
+            Todo
+        })
     }, (e) => {
         res.send(e)
     })
@@ -54,15 +56,18 @@ app.get('/todos',  (req, res) =>
 })
 
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', authenticate, (req, res) => {
 
-    var { id} = req.params
+    var { id } = req.params
 
     if(!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
     else { 
-        Todo.findById(id).then((todos) => {
+        Todo.findOne({
+             _id: id,
+            _creator:req.user._Id
+        }).then((todos) => {
             if(!todos)  return res.status(400).send()
             res.send({todos})
         }).catch((err) => {
@@ -73,7 +78,7 @@ app.get('/todos/:id', (req, res) => {
 
 })
 
-app.delete('/todos/:id', (req, res) => {
+app.delete('/todos/:id', authenticate, (req, res) => {
 
     var { id} = req.params
 
@@ -81,7 +86,10 @@ app.delete('/todos/:id', (req, res) => {
         return res.status(404).send();
     }
     else { 
-        Todo.findByIdAndDelete(id).then((todos) => {
+        Todo.findOneAndRemove({
+            _id:id,
+            _creator:req.user.id
+        }).then((todos) => {
             if(!todos)  return res.status(400).send()
             res.send({todos})
         }).catch((err) => {
@@ -92,7 +100,7 @@ app.delete('/todos/:id', (req, res) => {
 
 })
 
-app.patch('/todos/:id', (req, res ) => {
+app.patch('/todos/:id', authenticate, (req, res ) => {
 
     var { id } = req.params
     var body = _.pick(req.body, ['text', 'completed'])
@@ -108,7 +116,10 @@ app.patch('/todos/:id', (req, res ) => {
         body.completedAt = null
     }
 
-    Todo.findByIdAndUpdate(id, {
+    Todo.findOneAndUpdate({
+        _id:id,
+        _creator:req.user.id
+    }, {
         $set:  body 
     }, {new :  true}).then((todos) => {
         if(!todos)  return res.status(400).send()
@@ -147,6 +158,16 @@ app.post('/user/login', (req,res) => {
     }).catch((e) => {
         res.status(400).send()
     })
+})
+
+
+app.delete('/users/me/token', authenticate, (req, res) => { 
+    req.user.removeToken(req.token).then(() => {
+        res.status(200).send()
+    }).catch( (e) =>{
+        res.status(400).send()
+    }) 
+  
 })
 
 
