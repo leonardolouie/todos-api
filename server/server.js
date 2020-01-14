@@ -13,6 +13,7 @@ const app = express();
 const port =  process.env.PORT || 3000
 
 
+  
 app.use(bodyParser.json());
 
 
@@ -124,6 +125,9 @@ app.post('/user', (req, res) => {
     const body = _.pick(req.body, ['email', 'password'])
     const user = new User(body)
 
+
+
+
     user.save().then(()=> {
        return  user.generateAuthToken()
     }).then((token) => {
@@ -133,7 +137,6 @@ app.post('/user', (req, res) => {
     })
  
 })
-
 
 app.get('/users/me', authenticate, (req,res) => {
    res.send(req.user)
